@@ -6,13 +6,14 @@ import java.util.Locale
 
 @JvmInline
 value class Money(val minor: Long) {
-    fun formatVnd(masked: Boolean = false): String {
+    fun formatVnd(masked: Boolean = false, absValue: Boolean = false): String {
         if (masked) return "••••••"
         val symbols = DecimalFormatSymbols(Locale.GERMANY).apply {
             groupingSeparator = '.'
         }
         val formatter = DecimalFormat("#,###", symbols)
-        val formattedNumber = formatter.format(minor)
+        val valueToFormat = if (absValue) kotlin.math.abs(minor) else minor
+        val formattedNumber = formatter.format(valueToFormat)
         return "$formattedNumber ₫"
     }
 

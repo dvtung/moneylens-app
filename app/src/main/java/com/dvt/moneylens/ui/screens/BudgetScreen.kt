@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.AutoGraph
 import androidx.compose.material.icons.rounded.EditCalendar
 import androidx.compose.material.icons.rounded.NotificationsActive
@@ -24,6 +25,7 @@ import com.dvt.moneylens.domain.model.TransactionType
 import com.dvt.moneylens.ui.MainUiState
 import com.dvt.moneylens.ui.designsystem.BudgetBar
 import com.dvt.moneylens.ui.designsystem.CategoryAvatar
+import com.dvt.moneylens.ui.designsystem.EmptyState
 import com.dvt.moneylens.ui.designsystem.FintechScreenTopAppBar
 import com.dvt.moneylens.ui.designsystem.MoneyText
 import com.dvt.moneylens.ui.designsystem.PrivacyToggle
@@ -232,49 +234,61 @@ fun BudgetScreen(
                 }
                 .sortedByDescending { it.utilization }
 
-            items(budgetItems) { item ->
-                Card(
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.lg, vertical = 4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(Spacing.md)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CategoryAvatar(category = item.category)
-                            Spacer(modifier = Modifier.width(Spacing.md))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = item.category.name,
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                                )
-                                Text(
-                                    text = "Hạn mức: ${if (uiState.isMasked) "••••••" else Money(item.budgetLimit).formatVnd()}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+            if (budgetItems.isEmpty()) {
+                item {
+                    EmptyState(
+                        icon = androidx.compose.material.icons.Icons.Rounded.AccountBalanceWallet,
+                        title = "Chưa có danh mục ngân sách",
+                        body = "Thiết lập hạn mức ngân sách hàng tháng để kiểm soát chi tiêu hiệu quả.",
+                        actionLabel = "Thiết lập ngân sách",
+                        onActionClick = { onOpenBudgetSettings?.invoke() }
+                    )
+                }
+            } else {
+                items(budgetItems) { item ->
+                    Card(
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.lg, vertical = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(Spacing.md)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                CategoryAvatar(category = item.category)
+                                Spacer(modifier = Modifier.width(Spacing.md))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = item.category.name,
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                                    )
+                                    Text(
+                                        text = "Hạn mức: ${if (uiState.isMasked) "••••••" else Money(item.budgetLimit).formatVnd()}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Column(horizontalAlignment = Alignment.End) {
+                                    MoneyText(
+                                        amountMinor = item.spent,
+                                        type = TransactionType.EXPENSE,
+                                        masked = uiState.isMasked,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                }
                             }
-                            Column(horizontalAlignment = Alignment.End) {
-                                MoneyText(
-                                    amountMinor = item.spent,
-                                    type = TransactionType.EXPENSE,
-                                    masked = uiState.isMasked,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                            }
+
+                            Spacer(modifier = Modifier.height(Spacing.sm))
+
+                            BudgetBar(
+                                spentMinor = item.spent,
+                                limitMinor = item.budgetLimit,
+                                masked = uiState.isMasked
+                            )
                         }
-
-                        Spacer(modifier = Modifier.height(Spacing.sm))
-
-                        BudgetBar(
-                            spentMinor = item.spent,
-                            limitMinor = item.budgetLimit,
-                            masked = uiState.isMasked
-                        )
                     }
                 }
             }

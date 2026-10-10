@@ -6,7 +6,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 data class DataBackupDto(
-    val schemaVersion: Int = 5,
+    val schemaVersion: Int = 6,
     val appVersion: String = "1.0.0",
     val appName: String = "MoneyLens",
     val exportedAt: Long = System.currentTimeMillis(),
@@ -19,7 +19,8 @@ data class DataBackupDto(
     val assets: List<AssetEntity>,
     val members: List<MemberEntity>,
     val loans: List<LoanEntity>,
-    val loanPayments: List<LoanPaymentEntity>
+    val loanPayments: List<LoanPaymentEntity>,
+    val investmentTransactions: List<InvestmentTransactionEntity> = emptyList()
 )
 
 data class BackupSummary(
@@ -35,15 +36,16 @@ data class BackupSummary(
     val assetCount: Int,
     val memberCount: Int,
     val loanCount: Int,
-    val loanPaymentCount: Int
+    val loanPaymentCount: Int,
+    val investmentTransactionCount: Int = 0
 ) {
     val totalRecordCount: Int
-        get() = accountCount + creditCardCount + transactionCount + categoryCount + budgetCount + assetCount + memberCount + loanCount + loanPaymentCount
+        get() = accountCount + creditCardCount + transactionCount + categoryCount + budgetCount + assetCount + memberCount + loanCount + loanPaymentCount + investmentTransactionCount
 }
 
 object DataBackupManager {
 
-    const val CURRENT_SCHEMA_VERSION = 5
+    const val CURRENT_SCHEMA_VERSION = 6
 
     fun toJson(dto: DataBackupDto): String {
         val root = JSONObject().apply {
@@ -208,6 +210,26 @@ object DataBackupManager {
                         put("interestMinor", lp.interestMinor)
                         put("paidAt", lp.paidAt)
                         put("note", lp.note)
+                    })
+                }
+            })
+
+            // 10. Investment Transactions
+            put("investmentTransactions", JSONArray().apply {
+                dto.investmentTransactions.forEach { itx ->
+                    put(JSONObject().apply {
+                        put("id", itx.id)
+                        put("assetId", itx.assetId)
+                        put("symbol", itx.symbol)
+                        put("action", itx.action)
+                        put("quantity", itx.quantity)
+                        put("priceMinor", itx.priceMinor)
+                        put("totalAmountMinor", itx.totalAmountMinor)
+                        itx.accountId?.let { put("accountId", it) }
+                        itx.accountName?.let { put("accountName", it) }
+                        put("note", itx.note)
+                        put("feeAndTaxMinor", itx.feeAndTaxMinor)
+                        put("timestamp", itx.timestamp)
                     })
                 }
             })
@@ -419,6 +441,30 @@ object DataBackupManager {
             }
         }
 
+        // 10. Investment Transactions
+        val investmentTransactions = mutableListOf<InvestmentTransactionEntity>()
+        root.optJSONArray("investmentTransactions")?.let { arr ->
+            for (i in 0 until arr.length()) {
+                val o = arr.optJSONObject(i) ?: continue
+                investmentTransactions.add(
+                    InvestmentTransactionEntity(
+                        id = o.optString("id", java.util.UUID.randomUUID().toString()),
+                        assetId = o.optString("assetId", ""),
+                        symbol = o.optString("symbol", ""),
+                        action = o.optString("action", "BUY"),
+                        quantity = o.optDouble("quantity", 0.0),
+                        priceMinor = o.optLong("priceMinor", 0L),
+                        totalAmountMinor = o.optLong("totalAmountMinor", 0L),
+                        accountId = if (o.isNull("accountId") || !o.has("accountId")) null else o.optString("accountId"),
+                        accountName = if (o.isNull("accountName") || !o.has("accountName")) null else o.optString("accountName"),
+                        note = o.optString("note", ""),
+                        feeAndTaxMinor = o.optLong("feeAndTaxMinor", 0L),
+                        timestamp = o.optLong("timestamp", System.currentTimeMillis())
+                    )
+                )
+            }
+        }
+
         DataBackupDto(
             schemaVersion = schemaVersion,
             appVersion = appVersion,
@@ -433,7 +479,8 @@ object DataBackupManager {
             assets = assets,
             members = members,
             loans = loans,
-            loanPayments = loanPayments
+            loanPayments = loanPayments,
+            investmentTransactions = investmentTransactions
         )
     }
 
@@ -452,7 +499,9 @@ object DataBackupManager {
             assetCount = root.optJSONArray("assets")?.length() ?: 0,
             memberCount = root.optJSONArray("members")?.length() ?: 0,
             loanCount = root.optJSONArray("loans")?.length() ?: 0,
-            loanPaymentCount = root.optJSONArray("loanPayments")?.length() ?: 0
+            loanPaymentCount = root.optJSONArray("loanPayments")?.length() ?: 0,
+            investmentTransactionCount = root.optJSONArray("investmentTransactions")?.length() ?: 0
         )
     }
 }
+

@@ -146,7 +146,7 @@ class BankNotificationListenerService : NotificationListenerService() {
                 } ?: allAccounts.firstOrNull { it.type != "CREDIT_CARD" } ?: allAccounts.firstOrNull()
             }
 
-            val finalAccountId = matchedAccount?.id ?: matchedCard?.accountId ?: "acc_vcb"
+            val finalAccountId = matchedAccount?.id ?: matchedCard?.accountId ?: repository.ensureDefaultCashAccount()
             val isCardCredit = matchedCard?.cardType == "CREDIT" || (matchedCard == null && parsed.isCreditCard)
 
             // Kiểm tra biến động thu có khớp với ví hoặc tài khoản đang có trong hệ thống không

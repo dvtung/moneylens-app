@@ -42,7 +42,7 @@ fun MoneyText(
         TransactionType.TRANSFER -> Triple("", lensColors.transfer, "chuyển khoản")
     }
 
-    val formattedNumber = Money(amountMinor).formatVnd(masked = false)
+    val formattedNumber = Money(amountMinor).formatVnd(masked = false, absValue = prefix.isNotEmpty())
     val displayText = "$prefix$formattedNumber"
 
     Text(

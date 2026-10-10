@@ -8,6 +8,9 @@ import com.dvt.moneylens.domain.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class MoneyLensRepository(private val db: MoneyLensDatabase) {
@@ -116,9 +119,10 @@ class MoneyLensRepository(private val db: MoneyLensDatabase) {
         val members = db.memberDao().getAllMembersList()
         val loans = db.loanDao().getAllLoansList()
         val payments = db.loanPaymentDao().getAllPaymentsList()
+        val invTxs = db.investmentTransactionDao().getAllTransactionsList()
 
         return DataBackupDto(
-            schemaVersion = 5,
+            schemaVersion = 6,
             accounts = accounts,
             creditCards = cards,
             categories = cats,
@@ -127,7 +131,8 @@ class MoneyLensRepository(private val db: MoneyLensDatabase) {
             assets = assets,
             members = members,
             loans = loans,
-            loanPayments = payments
+            loanPayments = payments,
+            investmentTransactions = invTxs
         )
     }
 
@@ -136,6 +141,7 @@ class MoneyLensRepository(private val db: MoneyLensDatabase) {
             // Delete all records in proper dependency order
             db.loanPaymentDao().deleteAll()
             db.loanDao().deleteAll()
+            db.investmentTransactionDao().deleteAll()
             db.transactionDao().deleteAll()
             db.creditCardDao().deleteAll()
             db.budgetDao().deleteAll()
@@ -172,6 +178,9 @@ class MoneyLensRepository(private val db: MoneyLensDatabase) {
             if (dto.loanPayments.isNotEmpty()) {
                 db.loanPaymentDao().insertAll(dto.loanPayments)
             }
+            if (dto.investmentTransactions.isNotEmpty()) {
+                db.investmentTransactionDao().insertAll(dto.investmentTransactions)
+            }
         }
 
         context?.getSharedPreferences("moneylens_prefs", Context.MODE_PRIVATE)
@@ -189,7 +198,11 @@ class MoneyLensRepository(private val db: MoneyLensDatabase) {
         }
     }
 
-    suspend fun updateBudget(categoryId: String, limitMinor: Long, periodMonth: String = "2026-10") {
+    private fun getCurrentMonthStr(): String {
+        return SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(Date())
+    }
+
+    suspend fun updateBudget(categoryId: String, limitMinor: Long, periodMonth: String = getCurrentMonthStr()) {
         val budget = Budget(
             id = "b_${categoryId}",
             categoryId = categoryId,
@@ -203,12 +216,13 @@ class MoneyLensRepository(private val db: MoneyLensDatabase) {
         val expenseCats = categories.filter { it.type == TransactionType.EXPENSE }
         if (expenseCats.isEmpty()) return
         val perCat = (totalBudgetMinor / expenseCats.size).coerceAtLeast(100_000L)
+        val currentMonth = getCurrentMonthStr()
         val entities = expenseCats.map { cat ->
             BudgetEntity(
                 id = "b_${cat.id}",
                 categoryId = cat.id,
                 limitMinor = perCat,
-                periodMonth = "2026-10"
+                periodMonth = currentMonth
             )
         }
         db.budgetDao().insertAll(entities)

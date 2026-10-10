@@ -263,6 +263,9 @@ interface InvestmentTransactionDao {
     @Query("SELECT * FROM investment_transactions ORDER BY timestamp DESC")
     fun getAllTransactions(): Flow<List<InvestmentTransactionEntity>>
 
+    @Query("SELECT * FROM investment_transactions ORDER BY timestamp DESC")
+    suspend fun getAllTransactionsList(): List<InvestmentTransactionEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(tx: InvestmentTransactionEntity)
 

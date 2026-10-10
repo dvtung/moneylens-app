@@ -103,11 +103,14 @@ object MarketPriceService {
     }
 
     private fun fetchGoldPrice(symbol: String, fallbackPrice: Long): Long {
+        if (fallbackPrice > 0L) return fallbackPrice
         val cleanSymbol = symbol.trim().uppercase()
-        return if (cleanSymbol.contains("MIẾNG") || fallbackPrice > 20_000_000L) {
+        return if (cleanSymbol.contains("SJC") || cleanSymbol.contains("MIẾNG")) {
             84_800_000L // 84.8 triệu / lượng
-        } else {
+        } else if (cleanSymbol.contains("NHẪN") || cleanSymbol.contains("CHỈ")) {
             8_480_000L  // 8.48 triệu / chỉ
+        } else {
+            fallbackPrice
         }
     }
 

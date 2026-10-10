@@ -145,9 +145,14 @@ data class Loan(
     }
 
     val regularMonthlyPaymentMinor: Long get() {
+        val basePrincipalMonthly = if (termMonths > 0) originalAmountMinor / termMonths else 0L
+        val monthlyFee = if (termMonths > 0) conversionFeeMinor / termMonths else 0L
         return if (conversionFeeSchedule == ConversionFeeSchedule.SPREAD_MONTHLY) {
-            val monthlyFee = if (termMonths > 0) conversionFeeMinor / termMonths else 0L
-            monthlyPaymentMinor + monthlyFee
+            if (monthlyPaymentMinor >= basePrincipalMonthly + monthlyFee && monthlyFee > 0) {
+                monthlyPaymentMinor
+            } else {
+                monthlyPaymentMinor + monthlyFee
+            }
         } else {
             monthlyPaymentMinor
         }

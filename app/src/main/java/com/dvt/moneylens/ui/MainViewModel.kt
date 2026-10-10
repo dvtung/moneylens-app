@@ -229,7 +229,11 @@ data class MainUiState(
             val currentYr = cal.get(Calendar.YEAR)
             val currentMonth = cal.get(Calendar.MONTH) + 1 // 1..12
 
-            val maxMonth = if (selectedChartYear >= currentYr) currentMonth else 12
+            val maxMonth = when {
+                selectedChartYear < currentYr -> 12
+                selectedChartYear == currentYr -> currentMonth
+                else -> 12
+            }
 
             val result = mutableListOf<MonthlyBarData>()
             for (m in 1..maxMonth) {
@@ -847,7 +851,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 creditCardId = creditCardId
             )
             repository.addTransaction(newTx)
-            if (type == TransactionType.EXPENSE) {
+            if (type == TransactionType.EXPENSE && categoryId != "cat_investment" && categoryId != "cat_credit_pay") {
                 val txCal = java.util.Calendar.getInstance().apply { timeInMillis = occurredAt }
                 val nowCal = java.util.Calendar.getInstance()
                 val isCurrentMonth = txCal.get(java.util.Calendar.YEAR) == nowCal.get(java.util.Calendar.YEAR) &&

@@ -59,10 +59,11 @@ class BankSmsReceiver : BroadcastReceiver() {
             } else null
             val isCardCredit = matchedCard?.cardType == "CREDIT" || (matchedCard == null && parsed.isCreditCard)
 
+            val targetAccountId = matchedCard?.accountId ?: repository.ensureDefaultCashAccount()
             val txId = UUID.randomUUID().toString()
             val tx = Transaction(
                 id = txId,
-                accountId = matchedCard?.accountId ?: "acc_vcb",
+                accountId = targetAccountId,
                 amountMinor = parsed.amountMinor,
                 type = parsed.type,
                 categoryId = null,
