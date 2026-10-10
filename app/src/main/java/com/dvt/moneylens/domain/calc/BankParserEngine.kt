@@ -241,7 +241,7 @@ object BankParserEngine {
     }
 
     private fun extractAccountHint(text: String): String? {
-        val accRegex = Regex("""(?:TK|tai khoan|the|card)\s*[:]?\s*([0-9xX*]{3,16})""", RegexOption.IGNORE_CASE)
+        val accRegex = Regex("""(?:TK|tai khoan|tài khoản|the|thẻ|card|credit)\s*(?:VISA|MASTER|JCB|tin dung|tín dụng)*\s*[:]?\s*([0-9xX*]{3,16})""", RegexOption.IGNORE_CASE)
         val match = accRegex.find(text) ?: return null
         val full = match.groupValues[1]
         return if (full.length >= 4) full.takeLast(4) else full

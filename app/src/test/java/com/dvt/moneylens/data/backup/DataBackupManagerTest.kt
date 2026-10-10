@@ -4,7 +4,10 @@ import com.dvt.moneylens.data.local.AccountEntity
 import com.dvt.moneylens.data.local.InvestmentTransactionEntity
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class DataBackupManagerTest {
 
     @Test
@@ -58,18 +61,20 @@ class DataBackupManagerTest {
         assertTrue(jsonString.contains("acc_1"))
         assertTrue(jsonString.contains("asset_btc"))
 
-        val summary = DataBackupManager.extractSummary(jsonString)
-        assertNotNull(summary)
-        assertEquals(6, summary?.schemaVersion)
-        assertEquals(1, summary?.accountCount)
-        assertEquals(1, summary?.investmentTransactionCount)
-        assertEquals(2, summary?.totalRecordCount)
+        val summaryResult = DataBackupManager.extractSummary(jsonString)
+        assertTrue(summaryResult.isSuccess)
+        val summary = summaryResult.getOrThrow()
+        assertEquals(6, summary.schemaVersion)
+        assertEquals(1, summary.accountCount)
+        assertEquals(1, summary.investmentTransactionCount)
+        assertEquals(2, summary.totalRecordCount)
 
-        val restoredDto = DataBackupManager.fromJson(jsonString)
-        assertNotNull(restoredDto)
-        assertEquals(1, restoredDto?.accounts?.size)
-        assertEquals("Ví Tiền Mặt", restoredDto?.accounts?.first()?.name)
-        assertEquals(1, restoredDto?.investmentTransactions?.size)
-        assertEquals("BTC", restoredDto?.investmentTransactions?.first()?.symbol)
+        val restoredResult = DataBackupManager.fromJson(jsonString)
+        assertTrue(restoredResult.isSuccess)
+        val restoredDto = restoredResult.getOrThrow()
+        assertEquals(1, restoredDto.accounts.size)
+        assertEquals("Ví Tiền Mặt", restoredDto.accounts.first().name)
+        assertEquals(1, restoredDto.investmentTransactions.size)
+        assertEquals("BTC", restoredDto.investmentTransactions.first().symbol)
     }
 }

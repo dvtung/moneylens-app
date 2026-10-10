@@ -10,7 +10,7 @@ data class DataBackupDto(
     val appVersion: String = "1.0.0",
     val appName: String = "MoneyLens",
     val exportedAt: Long = System.currentTimeMillis(),
-    val deviceModel: String = "${Build.MANUFACTURER} ${Build.MODEL}",
+    val deviceModel: String = try { "${Build.MANUFACTURER} ${Build.MODEL}" } catch (_: Throwable) { "Android Device" },
     val accounts: List<AccountEntity>,
     val creditCards: List<CreditCardEntity>,
     val categories: List<CategoryEntity>,
