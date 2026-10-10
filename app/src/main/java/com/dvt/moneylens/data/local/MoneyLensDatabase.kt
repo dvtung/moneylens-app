@@ -72,7 +72,6 @@ abstract class MoneyLensDatabase : RoomDatabase() {
                     "moneylens.db"
                 )
                     .addMigrations(MIGRATION_5_6)
-                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

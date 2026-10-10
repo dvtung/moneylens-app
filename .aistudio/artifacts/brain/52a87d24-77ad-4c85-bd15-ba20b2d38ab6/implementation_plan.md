@@ -1,63 +1,102 @@
-# Kế Hoạch Khắc Phục Lỗi Logic & Tối Ưu Hóa Dữ Liệu Dự Án MoneyLens
+# Kế Hoạch Tái Cấu Trúc & Refactor Toàn Diện 5 Giai Đoạn (MoneyLens)
 
-Kế hoạch này chi tiết hóa phương án xử lý 9 điểm bất hợp lý trong dự án MoneyLens theo kết quả phân tích mã nguồn chi tiết, bao gồm sao lưu dữ liệu đầu tư, tính toán nợ trả góp, xử lý ID tài khoản mặc định, cảnh báo ngân sách, hiển thị biểu đồ thu chi, cập nhật giá thị trường và định dạng tiền tệ.
+Kế hoạch này chi tiết hóa lộ trình tái cấu trúc toàn diện mã nguồn dự án **MoneyLens**, giải quyết triệt để các vấn đề về **Bảo mật PIN**, **Tách nhỏ God Classes** (`Modals.kt` 4,897 dòng & `SettingsScreen.kt` 2,082 dòng), **Tối ưu hiệu năng Coroutines/State**, **Dọn dẹp Warning & Icon cũ**, và **Bổ sung Unit Tests tự động**.
 
 ---
 
-## Các Quyết Định Thay Đổi Chính
+## Các Quyết Định Đã Xác Nhận Từ Người Dùng
 
 > [!IMPORTANT]
-> - **Nâng cấp Schema Version sao lưu**: `DataBackupDto` sẽ nâng `schemaVersion` từ **5 lên 6** để bổ sung bảng `investmentTransactions`. Tự động tương thích ngược với file backup v5 cũ.
-> - **Khôi phục ID tài khoản mặc định**: Thay thế các giá trị gán cứng `"acc_vcb"` trong receiver/service bằng gọi động `ensureDefaultCashAccount()` từ `MoneyLensRepository`.
+> - **Lộ trình thực hiện**: Triển khai toàn bộ theo kế hoạch **5 Giai đoạn**.
+> - **Modun hóa Modals.kt**: Tách tệp `Modals.kt` (4,897 dòng) thành thư mục `ui/screens/modals/` chứa các tệp chuyên biệt:
+>   - `TransactionModals.kt` (Thêm/Sửa/Lọc giao dịch)
+>   - `LoanModals.kt` (Quản lý khoản vay, nợ, trả góp)
+>   - `CardModals.kt` (Thêm/Chỉnh sửa thẻ tín dụng, ví điện tử)
+>   - `InvestmentModals.kt` (Thêm/Sửa/Lịch sử tài sản đầu tư)
+>   - `BudgetModals.kt` (Cài đặt ngân sách)
+> - **Unit Testing**: Bổ sung bộ Unit Tests tự động cho `BankParserEngine`, `CostBasisCalculator`, `CreditCardCycleCalculator` và `DataBackupManager`.
 
 ---
 
-## Chi Tiết Các Điểm Khắc Phục (9 Điểm)
+## 1. Tổng Quan Kế Hoạch Tái Cấu Trúc 5 Giai Đoạn
 
-### 1. Data & Backup Layer (`DataBackupManager.kt` & `MoneyLensRepository.kt`)
-- **Vấn đề**: File backup JSON v5 bị bỏ sót lịch sử giao dịch đầu tư (`investmentTransactions`).
-- **Khắc phục**:
-  - Bổ sung `investmentTransactions: List<InvestmentTransactionEntity>` vào `DataBackupDto` và `BackupSummary`.
-  - Tăng `CURRENT_SCHEMA_VERSION = 6`.
-  - Cập nhật `DataBackupManager.toJson()`, `fromJson()` và `extractSummary()` để ghi/đọc mảng `investmentTransactions`.
-  - Cập nhật `MoneyLensRepository.exportAllDataForBackup()` và `restoreAllData()` xử lý đồng bộ mảng này.
+### 🔒 Giai đoạn 1: Bảo mật Mã PIN & An toàn Cấu trúc Dữ liệu
+- **Bảo mật mã PIN (SHA-256 + Salt)**:
+  - Tạo utility `SecurityUtils.kt` thực hiện hash mã PIN bằng `SHA-256` kết hợp Salt thiết bị.
+  - Cập nhật `MainViewModel.kt` lưu/xác thực PIN qua hash SHA-256 thay vì chuỗi thô.
+  - Tự động nâng cấp mã PIN thô hiện tại sang dạng hash khi người dùng mở ứng dụng lần đầu.
+- **An toàn Room Database**:
+  - Gỡ bỏ `.fallbackToDestructiveMigration()` trong `MoneyLensDatabase.kt` để ngăn cơ chế tự xóa sạch dữ liệu người dùng khi nâng cấp Database.
 
-### 2. Chuỗi Tháng Ngân Sách Mặc Định (`MoneyLensRepository.kt`)
-- **Vấn đề**: Tham số `periodMonth` trong `updateBudget()` bị hardcode chuỗi cũ `"2026-10"`.
-- **Khắc phục**: Thay giá trị mặc định bằng chuỗi tháng hiện tại động: `SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(Date())`.
+### 🧩 Giai đoạn 2: Modun hóa & Tách nhỏ God Classes (`Modals.kt` & `SettingsScreen.kt`)
+- **Tách `Modals.kt` (4,897 dòng)** sang gói `com.dvt.moneylens.ui.screens.modals.*`:
+  1. `TransactionModals.kt`: Modal thêm/sửa giao dịch thu/chi/chuyển khoản, bộ lọc nâng cao.
+  2. `LoanModals.kt`: Modal thêm khoản vay/cho vay, ghi nhận trả nợ, đổi trả góp.
+  3. `CardModals.kt`: Modal thêm/sửa thẻ tín dụng, chọn ngày sao kê, hạn thanh toán.
+  4. `InvestmentModals.kt`: Sheet mua/bán tài sản, cập nhật định giá, cài đặt thuế/phí.
+  5. `BudgetModals.kt`: Sheet điều chỉnh hạn mức ngân sách tháng và cảnh báo.
+- **Tách `SettingsScreen.kt` (2,082 dòng)** sang gói `com.dvt.moneylens.ui.screens.settings.*`:
+  1. `SecuritySettingsSection.kt`: Đổi PIN, bật/tắt sinh trắc học, chọn thời gian tự động khóa.
+  2. `BackupSettingsSection.kt`: Xuất sao lưu JSON, khôi phục dữ liệu, xem lịch sử backup.
+  3. `ThemeSettingsSection.kt`: Chọn chế độ Sáng/Tối/Hệ thống, chọn bộ màu Accent.
+  4. `BankCaptureSettingsSection.kt`: Quản lý danh sách ngân hàng bật/tắt đọc thông báo.
 
-### 3. Tính Khoản Thanh Toán Trả Góp Hàng Tháng (`DomainModels.kt`)
-- **Vấn đề**: Trong `Loan.regularMonthlyPaymentMinor`, nếu `monthlyPaymentMinor` đã bao gồm phí chuyển đổi trả góp hàng tháng, việc cộng thêm `conversionFeeMinor / termMonths` sẽ bị tính trùng phí (double counting).
-- **Khắc phục**: Điều chỉnh logic trả về `monthlyPaymentMinor` trực tiếp khi khoản thanh toán hàng tháng đã bao hàm phí.
+### ⚡ Giai đoạn 3: Tối ưu Hiệu năng & Bất Đồng Bộ
+- **Song song hóa Network Request (`MarketPriceService.kt`)**:
+  - Cải tiến `fetchUpdatedPrices()` sử dụng `coroutineScope { assets.map { async { ... } }.awaitAll() }` lấy giá thị trường các tài sản song song thay vì tuần tự.
+- **Tối ưu UI State Calculation (`MainViewModel.kt`)**:
+  - Caching các getter tính toán tổng tiền ròng (`totalCashBalanceMinor`, `totalPortfolioValueMinor`) để tránh tính toán lại liên tục trên UI Thread.
 
-### 4. Định Dạng Số Âm Tiền Tệ (`Money.kt`)
-- **Vấn đề**: `formatVnd()` định dạng số âm dưới dạng `-1.500.000 ₫`. Nếu các thành phần UI thêm thủ công dấu `-` hoặc `−` phía trước sẽ tạo ra dấu âm kép (VD: `--1.500.000 ₫`).
-- **Khắc phục**: Cập nhật `formatVnd()` để format giá trị tuyệt đối `abs(minor)` khi hiển thị có tiền tố định dấu hoặc xử lý không lặp lại dấu âm.
+### 🧹 Giai đoạn 4: Dọn Dẹp Code Rác, Cập Nhật Icon & Warnings
+- Dọn dẹp các biến, hàm và class thừa không còn sử dụng.
+- Cập nhật các icon Material 3 sang phiên bản `AutoMirrored` hiện đại (`Icons.AutoMirrored.Rounded.*`).
 
-### 5. ID Tài Khoản Mặc Định Trong Service/Receiver (`BankSmsReceiver.kt` & `BankNotificationListenerService.kt`)
-- **Vấn đề**: Sử dụng fallback gán cứng `"acc_vcb"` khi không tìm thấy tài khoản tương ứng từ tin nhắn/thông báo.
-- **Khắc phục**: Thay thế bằng `repository.ensureDefaultCashAccount()` để đảm bảo lấy đúng tài khoản tiền mặt/ngân hàng đang hoạt động trong DB.
-
-### 6. Cập Nhật Giá Thị Trường Đầu Tư (`MarketPriceService.kt`)
-- **Vấn đề**: Khi API lấy giá cổ phiếu/vàng không trả về kết quả hoặc bị lỗi, hệ thống tự động ghi đè giá nhập tay của người dùng về 0 hoặc giá mặc định.
-- **Khắc phục**: Bổ sung điều kiện kiểm tra dữ liệu API hợp lệ trước khi cập nhật; giữ nguyên giá định giá gần nhất của người dùng nếu API không có dữ liệu.
-
-### 7. Tính Toán Cảnh Báo Ngân Sách (`MainViewModel.kt`)
-- **Vấn đề**: Khi thêm giao dịch nhanh (`addQuickTransaction()`), danh mục Đầu tư (`cat_investment`) và Trả nợ thẻ tín dụng (`cat_credit_pay`) vẫn bị tính dồn vào ngân sách chi tiêu sinh hoạt, phát cảnh báo sai.
-- **Khắc phục**: Bỏ qua danh mục `cat_investment` và `cat_credit_pay` khi cộng dồn tổng chi tiêu kiểm tra hạn mức ngân sách.
-
-### 8. Biểu Đồ Thu Chi Theo Tháng (`MainViewModel.kt`)
-- **Vấn đề**: Trong `monthlyBarData`, việc tính toán `maxMonth` cho các năm quá khứ hoặc tương lai so với năm hiện tại (`selectedChartYear`) bị giới hạn sai theo tháng hiện tại của năm nay.
-- **Khắc phục**: Nếu `selectedChartYear < currentYear` thì `maxMonth = 12`; nếu `selectedChartYear > currentYear` thì `maxMonth = 0`; nếu bằng năm hiện tại thì `maxMonth = currentMonth`.
-
-### 9. Giao Diện & Tìm Kiếm (`MoneyText.kt` & `TransactionsScreen.kt`)
-- **Vấn đề**: Xử lý tiền tố dấu âm/dương trong `MoneyText` và thiếu nút xóa bộ lọc nhanh khi danh sách giao dịch lọc không có kết quả.
-- **Khắc phục**: Tối ưu tiền tố hiển thị trong `MoneyText` và bổ sung nút "Xóa bộ lọc" trực tiếp trên Empty State của `TransactionsScreen`.
+### 🧪 Giai đoạn 5: Bổ Sung Bộ Unit Tests Tự Động
+- Viết Unit Tests kiểm tra tính đúng đắn trên JVM với JUnit & Robolectric:
+  - `BankParserEngineTest.kt`: Kiểm tra bóc tách cú pháp SMS/Notification ngân hàng VCB, TCB, MB, VPB.
+  - `CostBasisCalculatorTest.kt`: Kiểm tra công thức FIFO/Giá vốn trung bình khi Mua/Bán tài sản.
+  - `DataBackupManagerTest.kt`: Kiểm tra tính toàn vẹn khi Serialization/Deserialization file sao lưu JSON v6.
 
 ---
 
-## Luồng Kiểm Tra & Biển Dịch
+## 2. Sơ Đồ Cấu Trúc Module Mới
 
-1. Chạy biên dịch `compile_applet` kiểm tra toàn bộ mã nguồn Kotlin.
-2. Kiểm tra thao tác Backup/Restore file JSON.
-3. Kiểm tra tính chính xác của màn hình Đầu tư, Trả góp, Ngân sách và Thẻ tín dụng.
+```
+app/src/main/java/com/dvt/moneylens/
+├── data/
+│   ├── backup/DataBackupManager.kt
+│   ├── local/ (Entities, DAOs, MoneyLensDatabase)
+│   ├── network/MarketPriceService.kt
+│   └── repository/MoneyLensRepository.kt
+├── domain/
+│   ├── calc/ (BankParserEngine, CostBasisCalculator)
+│   └── model/ (DomainModels, FinancialEnums, Money)
+├── util/
+│   └── SecurityUtils.kt (Hash SHA-256 + Salt)
+└── ui/
+    ├── MainViewModel.kt
+    ├── designsystem/ (CommonComponents, MoneyText, ...)
+    └── screens/
+        ├── modals/
+        │   ├── TransactionModals.kt
+        │   ├── LoanModals.kt
+        │   ├── CardModals.kt
+        │   ├── InvestmentModals.kt
+        │   └── BudgetModals.kt
+        └── settings/
+            ├── SecuritySettingsSection.kt
+            ├── BackupSettingsSection.kt
+            ├── ThemeSettingsSection.kt
+            └── BankCaptureSettingsSection.kt
+```
+
+---
+
+## 3. Luồng Thực Thi Chi Tiết
+
+1. **Bước 1**: Tạo `SecurityUtils.kt` mã hóa PIN SHA-256, gỡ fallback destructive migration DB, chạy `compile_applet`.
+2. **Bước 2**: Tạo các file trong `ui/screens/modals/`, chuyển các Composable Modal từ `Modals.kt` sang.
+3. **Bước 3**: Tạo các file trong `ui/screens/settings/`, trích xuất các Section từ `SettingsScreen.kt`.
+4. **Bước 4**: Tối ưu `MarketPriceService.kt` với `async/awaitAll` song song.
+5. **Bước 5**: Tạo bộ Unit Test trong `app/src/test/java/com/dvt/moneylens/` và chạy `gradle :app:testDebugUnitTest`.
+6. **Bước 6**: Biên dịch dự án bằng `compile_applet` xác nhận hoàn thành toàn bộ.

@@ -49,9 +49,14 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dvt.moneylens.domain.calc.BankPackageRegistry
 import com.dvt.moneylens.domain.calc.BankParserEngine
+import com.dvt.moneylens.domain.calc.SupportedBank
 import com.dvt.moneylens.ui.AutoLockTimeout
 import com.dvt.moneylens.ui.MainUiState
 import com.dvt.moneylens.ui.designsystem.FintechScreenTopAppBar
+import com.dvt.moneylens.ui.screens.settings.BankCaptureSettingsSection
+import com.dvt.moneylens.ui.screens.settings.BackupSettingsSection
+import com.dvt.moneylens.ui.screens.settings.SecuritySettingsSection
+import com.dvt.moneylens.ui.screens.settings.ThemeSettingsSection
 import com.dvt.moneylens.ui.theme.LocalMoneyLensColors
 import com.dvt.moneylens.ui.theme.Spacing
 import com.dvt.moneylens.ui.theme.ThemeAccent

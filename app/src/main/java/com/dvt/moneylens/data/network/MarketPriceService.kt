@@ -4,6 +4,9 @@ import android.util.Log
 import com.dvt.moneylens.domain.model.Asset
 import com.dvt.moneylens.domain.model.AssetType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -17,7 +20,7 @@ object MarketPriceService {
     /**
      * Lấy giá thị trường cập nhật cho danh sách tài sản.
      * Tự động điều phối theo loại tài sản (Crypto, Cổ phiếu VN, Vàng, Quỹ).
-     * Có cơ chế fallback mượt mà nếu ngoại tuyến hoặc mất kết nối.
+     * Thực hiện truy vấn song song để tối ưu tốc độ phản hồi.
      */
     suspend fun fetchUpdatedPrices(
         assets: List<Asset>,
@@ -27,27 +30,22 @@ object MarketPriceService {
             return@withContext emptyMap()
         }
 
-        val updatedPrices = mutableMapOf<String, Long>()
-
-        assets.forEach { asset ->
-            try {
-                val newPrice = when (asset.type) {
-                    AssetType.CRYPTO -> fetchCryptoPrice(asset.symbol, asset.currentPriceMinor)
-                    AssetType.STOCK -> fetchVietnamStockPrice(asset.symbol, asset.currentPriceMinor)
-                    AssetType.GOLD -> fetchGoldPrice(asset.symbol, asset.currentPriceMinor)
-                    AssetType.FUND -> fetchFundNav(asset.symbol, asset.currentPriceMinor)
-                    AssetType.REAL_ESTATE -> asset.currentPriceMinor // BĐS không biến động tự động
+        coroutineScope {
+            assets.map { asset ->
+                async {
+                    runCatching {
+                        val newPrice = when (asset.type) {
+                            AssetType.CRYPTO -> fetchCryptoPrice(asset.symbol, asset.currentPriceMinor)
+                            AssetType.STOCK -> fetchVietnamStockPrice(asset.symbol, asset.currentPriceMinor)
+                            AssetType.GOLD -> fetchGoldPrice(asset.symbol, asset.currentPriceMinor)
+                            AssetType.FUND -> fetchFundNav(asset.symbol, asset.currentPriceMinor)
+                            AssetType.REAL_ESTATE -> asset.currentPriceMinor
+                        }
+                        if (newPrice > 0L) asset.id to newPrice else null
+                    }.getOrNull()
                 }
-
-                if (newPrice > 0L) {
-                    updatedPrices[asset.id] = newPrice
-                }
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to fetch price for ${asset.symbol}: ${e.message}")
-            }
+            }.awaitAll().filterNotNull().toMap()
         }
-
-        updatedPrices
     }
 
     private fun fetchCryptoPrice(symbol: String, fallbackPrice: Long): Long {

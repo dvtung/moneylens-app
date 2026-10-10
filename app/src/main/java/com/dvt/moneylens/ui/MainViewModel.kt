@@ -636,7 +636,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun verifyPin(pin: String): Boolean {
-        return if (pin == _currentPin.value) {
+        return if (com.dvt.moneylens.util.SecurityUtils.verifyPin(pin, _currentPin.value)) {
+            // Tự động nâng cấp sang Hash SHA-256 nếu PIN đang lưu ở dạng thô cũ
+            if (_currentPin.value.length == 6 && _currentPin.value == pin) {
+                setPin(pin)
+            }
             _isAppLocked.value = false
             true
         } else {
@@ -656,8 +660,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setPin(newPin: String) {
         if (newPin.length == 6) {
-            _currentPin.value = newPin
-            securityPrefs.edit().putString("user_pin_code", newPin).apply()
+            val hashed = com.dvt.moneylens.util.SecurityUtils.hashPin(newPin)
+            _currentPin.value = hashed
+            securityPrefs.edit().putString("user_pin_code", hashed).apply()
         }
     }
 
@@ -665,8 +670,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _isPinSecurityEnabled.value = enabled
         securityPrefs.edit().putBoolean("pin_security_enabled", enabled).apply()
         if (enabled && securityPrefs.getString("user_pin_code", null).isNullOrBlank()) {
-            _currentPin.value = defaultPin
-            securityPrefs.edit().putString("user_pin_code", defaultPin).apply()
+            val hashedDefault = com.dvt.moneylens.util.SecurityUtils.hashPin(defaultPin)
+            _currentPin.value = hashedDefault
+            securityPrefs.edit().putString("user_pin_code", hashedDefault).apply()
         }
         if (!enabled) {
             _isAppLocked.value = false
