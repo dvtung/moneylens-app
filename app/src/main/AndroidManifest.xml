@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+    <queries>
+        <package android:name="com.VCB" />
+        <package android:name="com.vcb.digibank" />
+        <package android:name="vn.com.techcombank.bb.app" />
+        <package android:name="com.tcb" />
+        <package android:name="com.mbmobile" />
+        <package android:name="com.vnpay.vpbankonline" />
+        <package android:name="com.vpb.mobile" />
+        <package android:name="com.vnpay.bidv" />
+        <package android:name="com.bidv.smartbanking" />
+        <package android:name="mobile.idglobal.pse.acb" />
+        <package android:name="com.tpb.mb.gprsandroid" />
+        <package android:name="vn.com.vietinbank.ipay" />
+        <package android:name="com.agribank.mobilebanking" />
+        <package android:name="com.vib.mobilebanking" />
+        <package android:name="com.shb.mobilebanking" />
+        <package android:name="com.shinhan.sol.vn" />
+        <package android:name="com.shinhan.smartbanking" />
+        <package android:name="vn.com.coopbank.mobile" />
+        <package android:name="com.coopbank.mobilebanking" />
+        <package android:name="com.vnpay.coopbank" />
+        <package android:name="com.hsbc.hsbcvn.hsbcmobilebanking" />
+        <package android:name="com.hsbc.hsbcvietnam" />
+        <package android:name="com.hsbc" />
+        <package android:name="hk.com.hsbc.hsbchkmobilebanking" />
+        <package android:name="com.vnpay.hdbank" />
+        <package android:name="com.msb.mb.gprsandroid" />
+        <package android:name="com.mservice.momotransfer" />
+        <package android:name="vn.com.vng.zalopay" />
+        <package android:name="com.bplus.vtpay" />
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".MoneyLensApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
+        android:theme="@style/Theme.MyApplication">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MyApplication">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".service.BankNotificationListenerService"
+            android:exported="true"
+            android:label="MoneyLens Bank Notification Service"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".receiver.BankSmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.QuickConfirmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.dvt.moneylens.ACTION_QUICK_CONFIRM" />
+                <action android:name="com.dvt.moneylens.ACTION_QUICK_DELETE" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

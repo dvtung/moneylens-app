@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">MoneyLens</string>
+    <string name="tagline">Biết tiền của bạn đi đâu</string>
+    <string name="currency_symbol">₫</string>
+    
+    <!-- Navigation -->
+    <string name="nav_overview">Tổng quan</string>
+    <string name="nav_transactions">Giao dịch</string>
+    <string name="nav_budget">Ngân sách</string>
+    <string name="nav_investment">Đầu tư</string>
+    <string name="nav_more">Thêm</string>
+    
+    <!-- Actions -->
+    <string name="action_confirm">Xác nhận</string>
+    <string name="action_add">Thêm</string>
+    <string name="action_save">Lưu thay đổi</string>
+    <string name="action_undo">Hoàn tác</string>
+    <string name="action_cancel">Hủy</string>
+    <string name="action_delete">Xóa</string>
+    <string name="action_pay_now">Thanh toán ngay</string>
+    <string name="action_view_all">Xem tất cả</string>
+    <string name="action_quick_add">Nhập nhanh</string>
+    
+    <!-- Financial Terms -->
+    <string name="income">Thu</string>
+    <string name="expense">Chi</string>
+    <string name="transfer">Chuyển nội bộ</string>
+    <string name="review_tray_title">giao dịch cần xem lại</string>
+    <string name="status_pending">Chờ xác nhận</string>
+    <string name="status_confirmed">Đã xác nhận</string>
+    <string name="available_to_spend">Còn có thể chi</string>
+    <string name="spent_of_budget">Đã chi</string>
+    <string name="budget_remaining">Còn</string>
+    <string name="budget_exceeded">Vượt</string>
+    
+    <!-- Cards -->
+    <string name="credit_cards">Thẻ tín dụng</string>
+    <string name="statement_date">Ngày sao kê</string>
+    <string name="due_date">Hạn thanh toán</string>
+    <string name="current_balance_owed">Dư nợ hiện tại</string>
+    <string name="credit_limit">Hạn mức</string>
+    <string name="min_payment">Thanh toán tối thiểu</string>
+    
+    <!-- Investment -->
+    <string name="portfolio_value">Tổng giá trị danh mục</string>
+    <string name="profit_loss">Lãi / Lỗ</string>
+    <string name="cost_basis">Giá vốn bình quân</string>
+    <string name="investment_disclaimer">Thông tin chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.</string>
+</resources>

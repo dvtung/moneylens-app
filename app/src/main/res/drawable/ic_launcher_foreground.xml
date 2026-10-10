@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer Golden Shield/Focus Halo Ring -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M54,23 C71.12,23 85,36.88 85,54 C85,71.12 71.12,85 54,85 C36.88,85 23,71.12 23,54 C23,36.88 36.88,23 54,23 Z" />
+
+    <!-- Top Focus Mark (Lens Index) -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M52,19 h4 v6 h-4 z" />
+
+    <!-- Pure White Refractive Lens Core -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,29 C67.81,29 79,40.19 79,54 C79,67.81 67.81,79 54,79 C40.19,79 29,67.81 29,54 C29,40.19 40.19,29 54,29 Z" />
+
+    <!-- Vibrant Emerald Lens Aperture Inner Body -->
+    <path
+        android:pathData="M54,34 C65.05,34 74,42.95 74,54 C74,65.05 65.05,74 54,74 C42.95,74 34,65.05 34,54 C34,42.95 42.95,34 54,34 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="34"
+                android:startY="34"
+                android:endX="74"
+                android:endY="74"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#004D40" />
+                <item android:offset="0.5" android:color="#00796B" />
+                <item android:offset="1.0" android:color="#00897B" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Upward Growth Chart Bars inside Lens (Gold & White) -->
+    <!-- Bar 1 (Left) -->
+    <path
+        android:fillColor="#80FFFFFF"
+        android:pathData="M40,59 h4 v7 h-4 z" />
+    <!-- Bar 2 (Middle-Left) -->
+    <path
+        android:fillColor="#B3FFFFFF"
+        android:pathData="M46,54 h4 v12 h-4 z" />
+    <!-- Bar 3 (Middle-Right) -->
+    <path
+        android:fillColor="#E6FFFFFF"
+        android:pathData="M52,49 h4 v17 h-4 z" />
+    <!-- Bar 4 (Right) -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M58,43 h4 v23 h-4 z" />
+
+    <!-- Glowing Trend Up Arrow Dynamic Line -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M41,58 L48,53 L54,48 L65,39" />
+
+    <!-- Trend Arrow Tip -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M60,37 h7 v7 L65,42 L62,45 L59,42 L62,39 Z" />
+
+</vector>

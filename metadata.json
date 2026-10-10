@@ -1,0 +1,6 @@
+{
+  "name": "MoneyLens",
+  "description": "Ứng dụng quản lý chi tiêu và đầu tư cá nhân offline-first với theo dõi thông báo và thẻ tín dụng",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

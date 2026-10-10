@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chính sách quyền riêng tư - MoneyLens</title>
+    <style>
+        :root {
+            --primary: #1E88E5;
+            --primary-dark: #1565C0;
+            --bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --badge-bg: #E3F2FD;
+            --badge-text: #1976D2;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.65;
+            color: var(--text-main);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        .header {
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+        .badge {
+            display: inline-block;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        h1 {
+            margin: 0 0 8px 0;
+            color: var(--primary-dark);
+            font-size: 28px;
+        }
+        .update-date {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        h2 {
+            color: var(--text-main);
+            font-size: 20px;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+        }
+        p, li {
+            font-size: 15px;
+            color: #334155;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight-box {
+            background-color: #F1F5F9;
+            border-left: 4px solid #3B82F6;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .contact-box {
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 36px;
+        }
+        .contact-box h3 {
+            margin-top: 0;
+            color: #166534;
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px 18px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="badge">Google Play Compliance</span>
+            <h1>Chính Sách Quyền Riêng Tư (Privacy Policy)</h1>
+            <div class="update-date">Ứng dụng: <strong>MoneyLens - Sổ Chi Tiêu & Quản Lý Tài Chính Cá Nhân</strong></div>
+            <div class="update-date">Cập nhật lần cuối: Tháng 10/2026</div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>Tuyên bố cốt lõi (Local-First Privacy):</strong> Ứng dụng MoneyLens được xây dựng trên nguyên tắc bảo mật tối thượng: dữ liệu tài chính của bạn (giao dịch, tài khoản, thẻ, tài sản) được lưu trữ và xử lý trực tiếp trên thiết bị của bạn (On-Device). Chúng tôi không thu thập, không bán và không gửi dữ liệu tài chính của bạn tới bất kỳ máy chủ bên thứ ba nào.
+        </div>
+
+        <h2>1. Thu thập và Xử lý Thông tin</h2>
+        <p>MoneyLens chỉ truy cập các thông tin tối thiểu cần thiết để phục vụ mục đích quản lý tài chính theo sự cho phép của bạn:</p>
+        <ul>
+            <li><strong>Dữ liệu tài chính người dùng nhập:</strong> Các khoản thu, chi, chuyển tiền, số dư thẻ, tài sản đầu tư và khoản nợ. Dữ liệu này được lưu trữ hoàn toàn trong cơ sở dữ liệu nội bộ (Room Database) trên điện thoại của bạn.</li>
+            <li><strong>Dữ liệu sinh trắc học (Vân tay / Khuôn mặt):</strong> Sử dụng API Android BiometricPrompt chuẩn của hệ điều hành. Ứng dụng không bao giờ có quyền truy cập hoặc lưu trữ dữ liệu sinh trắc học gốc của bạn.</li>
+            <li><strong>Không thu thập dữ liệu định danh:</strong> Ứng dụng không bắt buộc bạn phải cung cấp tên thật, số căn cước công dân hoặc số thẻ ngân hàng đầy đủ.</li>
+        </ul>
+
+        <h2>2. Quyền Truy Cập Thiết Bị & Minh Bạch Mục Đích (Permissions)</h2>
+        <p>Ứng dụng yêu cầu một số quyền truy cập hệ thống để cung cấp các tính năng tự động hóa:</p>
+        <ul>
+            <li><strong>Quyền đọc thông báo (Notification Listener Service):</strong>
+                <ul>
+                    <li><em>Mục đích:</em> Nhận diện thông báo biến động số dư từ các ứng dụng ngân hàng và ví điện tử được hỗ trợ (Techcombank, Vietcombank, MBBank, BIDV, MoMo, ZaloPay,...) để tự động gợi ý ghi chép chi tiêu.</li>
+                    <li><em>Phạm vi:</em> Chỉ phân tích văn bản thông báo của các ngân hàng nằm trong danh sách cho phép. Không can thiệp, không đọc thông báo cá nhân, mạng xã hội hay tin nhắn riêng tư.</li>
+                    <li><em>Xử lý:</em> Xử lý tức thì (Ephemerally) nội bộ trên máy bằng thuật toán RegEx, không truyền dữ liệu ra ngoài Internet.</li>
+                </ul>
+            </li>
+            <li><strong>Quyền nhận tin nhắn SMS biến động số dư (RECEIVE_SMS / READ_SMS - Tùy chọn):</strong>
+                <ul>
+                    <li><em>Mục đích:</em> Nhận biết biến động tài khoản từ các đầu số SMS Brandname của ngân hàng khi bạn không nhận qua ứng dụng di động.</li>
+                    <li><em>Cam kết:</em> Tuyệt đối không đọc tin nhắn riêng tư, không lưu trữ mã OTP hoặc mật khẩu xác thực. Tính năng này hoàn toàn tùy chọn và chỉ kích hoạt khi có sự đồng ý của bạn.</li>
+                </ul>
+            </li>
+            <li><strong>Quyền thông báo (POST_NOTIFICATIONS):</strong> Hiển thị thông báo xác nhận nhanh (Quick Confirm) sau khi phát hiện giao dịch để bạn xác nhận chỉ với một chạm.</li>
+            <li><strong>Quyền kết nối mạng (INTERNET):</strong> Sử dụng để truy vấn tỷ giá vàng và giá chứng khoán cập nhật công khai. Người dùng có thể bật chế độ "Ngoại tuyến hoàn toàn" để ngắt hoàn toàn kết nối mạng.</li>
+        </ul>
+
+        <h2>3. Lưu Trữ và Bảo Mật Dữ Liệu</h2>
+        <p>Dữ liệu của bạn được bảo vệ qua các lớp an toàn:</p>
+        <ul>
+            <li>Cơ sở dữ liệu SQLite/Room được mã hóa và cô lập trong sandbox của hệ điều hành Android.</li>
+            <li>Hỗ trợ khóa bảo vệ bằng mã PIN 6 số và xác thực sinh trắc học ngay khi mở ứng dụng.</li>
+            <li>Không đồng bộ ngầm dữ liệu lên máy chủ lạ.</li>
+        </ul>
+
+        <h2>4. Quyền Xóa Dữ Liệu Của Người Dùng (Data Deletion)</h2>
+        <p>Theo chính sách bảo vệ dữ liệu người dùng của Google Play:</p>
+        <ul>
+            <li>Bạn có toàn quyền xóa bỏ vĩnh viễn toàn bộ dữ liệu tài chính của mình bất kỳ lúc nào.</li>
+            <li><strong>Cách thực hiện:</strong> Mở ứng dụng &rarr; Vào tab <em>Cài đặt</em> &rarr; Chọn <em>"Xóa sạch toàn bộ dữ liệu"</em>. Toàn bộ cơ sở dữ liệu trên thiết bị sẽ được xóa sạch ngay lập tức.</li>
+            <li>Khi bạn gỡ cài đặt ứng dụng (Uninstall), toàn bộ dữ liệu cục bộ trong bộ nhớ ứng dụng cũng sẽ được hệ điều hành Android xóa bỏ hoàn toàn.</li>
+        </ul>
+
+        <h2>5. Chia Sẻ Thông Tin Với Bên Thứ Ba</h2>
+        <p>Chúng tôi cam kết <strong>KHÔNG</strong> bán, trao đổi, chia sẻ hoặc chuyển giao bất kỳ thông tin cá nhân hay dữ liệu tài chính nào của bạn cho bất kỳ bên thứ ba, mạng lưới quảng cáo hoặc đơn vị phân tích hành vi nào.</p>
+
+        <h2>6. Quyền Riêng Tư Của Trẻ Em</h2>
+        <p>Ứng dụng không hướng tới đối tượng người dùng dưới 13 tuổi và không cố ý thu thập bất kỳ thông tin nào từ trẻ em.</p>
+
+        <h2>7. Thay Đổi Chính Sách</h2>
+        <p>Chính sách này có thể được điều chỉnh để tuân thủ các quy định mới nhất của Google Play Developer Policy. Bất kỳ thay đổi nào sẽ được công bố công khai trên trang này và trong mục Cài đặt của ứng dụng.</p>
+
+        <div class="contact-box">
+            <h3>Liên Hệ & Hỗ Trợ</h3>
+            <p>Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào liên quan đến quyền riêng tư và dữ liệu cá nhân trong MoneyLens, vui lòng liên hệ:</p>
+            <p><strong>Email hỗ trợ nhà phát triển:</strong> <a href="mailto:dvtung0910@gmail.com">dvtung0910@gmail.com</a></p>
+            <p><strong>Dự án:</strong> MoneyLens Mobile Application</p>
+        </div>
+    </div>
+</body>
+</html>
